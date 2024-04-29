@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aks-helloworld-public  
+  name: aks-helloworld-external  
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: aks-helloworld-public
+      app: aks-helloworld-external
   template:
     metadata:
       labels:
-        app: aks-helloworld-public
+        app: aks-helloworld-external
     spec:
       containers:
-      - name: aks-helloworld-public
+      - name: aks-helloworld-external
         image: mcr.microsoft.com/azuredocs/aks-helloworld:v1
         ports:
         - containerPort: 80
         env:
         - name: TITLE
-          value: "Welcome to PUBLIC Azure Kubernetes Service (AKS)"
+          value: "Welcome to EXTERNAL Azure Kubernetes Service (AKS)"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: aks-helloworld-public  
+  name: aks-helloworld-external  
 spec:
   type: ClusterIP
   ports:
   - port: 80
   selector:
-    app: aks-helloworld-public
+    app: aks-helloworld-external

@@ -106,21 +106,24 @@ To see the ingress controller in action, run two demo applications in your AKS c
 Run the two demo applications using `kubectl apply`:
 
 ```console
-kubectl apply -f aks-helloworld-internal.yaml --namespace ingress-basic
-kubectl apply -f aks-helloworld-public.yaml --namespace ingress-basic
+kubectl create namespace internal
+kubectl apply -f aks-helloworld-internal.yaml --namespace internal
+kubectl create namespace external
+kubectl apply -f aks-helloworld-external.yaml --namespace external
 ```
 
 ### Create an ingress route
 
 Both applications are now running on your Kubernetes cluster. To route traffic to each application, create a Kubernetes ingress resource. The ingress resource configures the rules that route traffic to one of the two applications.
 
-In the following example, traffic to *public.<domain.com>* is routed to the service named [`aks-helloworld-public`](aks-helloworld-public.yaml). Traffic to *internal.<domain.com>* is routed to the [`aks-helloworld-internal`](aks-helloworld-internal.yaml) service.
+In the following example, traffic to *external.<domain.com>* is routed to the service named [`aks-helloworld-external`](aks-helloworld-external.yaml). Traffic to *internal.<domain.com>* is routed to the [`aks-helloworld-internal`](aks-helloworld-internal.yaml) service. We also need to create a default ingress for '*' hosts using [`aks-helloworld-default`](aks-helloworld-default.yaml).
 
 Create the [ingress resource](host-hello-world-ingress.yaml) using the `kubectl apply` command.
 
 ```
-kubectl create namespace ingress-basic
-kubectl apply -f host-hello-world-ingress.yaml --namespace ingress-basic
+kubectl apply -f default-hello-world-ingress.yaml --namespace default
+kubectl apply -f internal-hello-world-ingress.yaml --namespace internal
+kubectl apply -f external-hello-world-ingress.yaml --namespace external
 ```
 
 ## Create Application Gateway
@@ -192,7 +195,7 @@ kubectl apply -f host-hello-world-ingress.yaml --namespace ingress-basic
 1. Navigate to the browser or use the command below to verify connectivity:
     ```
     curl -L http://internal.azuredemoserver.com
-    curl -L http://public.azuredemoserver.com
+    curl -L http://external.azuredemoserver.com
     ```
 
 
