@@ -85,7 +85,7 @@ helm repo update
 
 helm install ingress-nginx ingress-nginx/ingress-nginx \
     --version 4.7.1 \
-    --namespace nginx-ingress \
+    --namespace ingress-basic \
     --create-namespace \
     --set controller.replicaCount=2 \
     --set controller.service.loadBalancerIP=$AKS_LB_IP_ADDRESS \
@@ -106,8 +106,8 @@ To see the ingress controller in action, run two demo applications in your AKS c
 Run the two demo applications using `kubectl apply`:
 
 ```console
-kubectl apply -f aks-helloworld-one.yaml --namespace ingress-basic
-kubectl apply -f aks-helloworld-two.yaml --namespace ingress-basic
+kubectl apply -f aks-helloworld-internal.yaml --namespace ingress-basic
+kubectl apply -f aks-helloworld-public.yaml --namespace ingress-basic
 ```
 
 ### Create an ingress route
@@ -119,7 +119,8 @@ In the following example, traffic to *EXTERNAL_IP/hello-world-one* is routed to 
 Create the ingress resource using the `kubectl apply` command.
 
 ```
-kubectl apply -f hello-world-ingress.yaml --namespace ingress-basic
+kubectl create namespace ingress-basic
+kubectl apply -f host-hello-world-ingress.yaml --namespace ingress-basic
 ```
 
 ## Create Application Gateway
@@ -181,13 +182,21 @@ kubectl apply -f hello-world-ingress.yaml --namespace ingress-basic
     az network nsg rule create -g $RG --nsg-name $NSG --name AllowHTTP --access Allow --protocol Tcp --direction Inbound --priority 150 --source-address-prefix Internet --source-port-range "*" --destination-address-prefix "*" --destination-port-range 80
     ```
 
+1. Create 2 A records in existing DNS zone:
+    ```
+    ZONE=azuredemoserver.com
+    az network dns record-set a add-record --ipv4-address $APPGW_PIP_ADDRESS --record-set-name internal -g $RG --zone-name $ZONE
+    az network dns record-set a add-record --ipv4-address $APPGW_PIP_ADDRESS --record-set-name public -g $RG --zone-name $ZONE
+    ```
+
 1. Navigate to the browser or use the command below to verify connectivity:
     ```
-    curl -L http://$APPGW_PIP
+    curl -L http://internal.azuredemoserver.com
+    curl -L http://public.azuredemoserver.com
     ```
 
 
 # Reference
 * https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/aks/configure-kubenet.md
 * https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/networking/
-* https://medium.com/@saifeddine.segni94/nginx-ingress-controllers-and-azure-app-gateway-for-azure-kubernetes-service-aks-f18c5be955d0
+* https://medium.com/@saifeddine.segni94/ingress-basic-controllers-and-azure-app-gateway-for-azure-kubernetes-service-aks-f18c5be955d0
