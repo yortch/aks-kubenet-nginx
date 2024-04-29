@@ -166,10 +166,22 @@ kubectl apply -f hello-world-ingress.yaml --namespace ingress-basic
 1. Create Application Gateway:
     ```
     APPGW='appgw-aks' 
-    az network application-gateway create --name $APPGW --resource-group $RG --subnet $APPGW_SUBNET --vnet-name $APPGW_VNET --sku Standard_V2 --priority 1001 --servers $AKS_LB_IP_ADDRESS --public-ip-address $APPGW_PIP
+    az network application-gateway create --name $APPGW --resource-group $RG \
+        --subnet $APPGW_SUBNET --vnet-name $APPGW_VNET --sku Standard_V2 \
+        --priority 100 --servers $AKS_LB_IP_ADDRESS --public-ip-address $APPGW_PIP
     ```
 
-1. Navigate to the browser or use the command below to verify connectivity
+1. Get the Network security group associated to the App Gateway Subnet:
+    ```
+    NSG=$(az network vnet subnet show --vnet-name $APPGW_VNET -n $APPGW_SUBNET -g $RG --query networkSecurityGroup.id --output tsv | sed 's/^.*networkSecurityGroups\///')
+    ```
+
+1. Change NSG rule to allow traffic on port 80 (if you get a Bad Request from local shell, then use Cloud Shell instead):
+    ```
+    az network nsg rule create -g $RG --nsg-name $NSG --name AllowHTTP --access Allow --protocol Tcp --direction Inbound --priority 150 --source-address-prefix Internet --source-port-range "*" --destination-address-prefix "*" --destination-port-range 80
+    ```
+
+1. Navigate to the browser or use the command below to verify connectivity:
     ```
     curl -L http://$APPGW_PIP
     ```
