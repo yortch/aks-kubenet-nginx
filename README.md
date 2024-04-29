@@ -114,9 +114,9 @@ kubectl apply -f aks-helloworld-public.yaml --namespace ingress-basic
 
 Both applications are now running on your Kubernetes cluster. To route traffic to each application, create a Kubernetes ingress resource. The ingress resource configures the rules that route traffic to one of the two applications.
 
-In the following example, traffic to *EXTERNAL_IP/hello-world-one* is routed to the service named `aks-helloworld-one`. Traffic to *EXTERNAL_IP/hello-world-two* is routed to the `aks-helloworld-two` service. Traffic to *EXTERNAL_IP/static* is routed to the service named `aks-helloworld-one` for static assets.
+In the following example, traffic to *public.<domain.com>* is routed to the service named [`aks-helloworld-public`](aks-helloworld-public.yaml). Traffic to *internal.<domain.com>* is routed to the [`aks-helloworld-internal`](aks-helloworld-internal.yaml) service.
 
-Create the ingress resource using the `kubectl apply` command.
+Create the [ingress resource](host-hello-world-ingress.yaml) using the `kubectl apply` command.
 
 ```
 kubectl create namespace ingress-basic
