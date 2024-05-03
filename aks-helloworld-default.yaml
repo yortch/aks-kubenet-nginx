@@ -12,6 +12,7 @@ spec:
       labels:
         app: aks-helloworld-default
     spec:
+      serviceAccountName: nginx
       containers:
       - name: aks-helloworld-default
         image: mcr.microsoft.com/azuredocs/aks-helloworld:v1
@@ -31,3 +32,34 @@ spec:
   - port: 80
   selector:
     app: aks-helloworld-default
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: allow-anyuid
+rules:
+- apiGroups:
+  - security.openshift.io
+  resourceNames:
+  - anyuid
+  resources:
+  - securitycontextconstraints
+  verbs:
+  - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nginx-allow-anyuid
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: allow-anyuid
+subjects:
+- kind: ServiceAccount
+  name: nginx
