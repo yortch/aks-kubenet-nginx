@@ -63,7 +63,6 @@ az aks create \
 ```
 
 ## Create an unmanaged ingress controller
-Instructions for installing and configuring NGINX Ingress controller are based on: https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/aks/ingress-basic.md
 
 Get the connect command to AKS cluster from the Azure Portal:
 
@@ -84,7 +83,7 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
 helm install ingress-nginx ingress-nginx/ingress-nginx \
-    --version 4.7.1 \
+    --version 4.10.1 \
     --namespace ingress-basic \
     --create-namespace \
     --set controller.replicaCount=2 \
@@ -200,6 +199,7 @@ kubectl apply -f external-hello-world-ingress.yaml --namespace external
 
 
 # Reference
+* https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/aks/ingress-basic.md
 * https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/aks/configure-kubenet.md
 * https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/networking/
 * https://medium.com/@saifeddine.segni94/ingress-basic-controllers-and-azure-app-gateway-for-azure-kubernetes-service-aks-f18c5be955d0
